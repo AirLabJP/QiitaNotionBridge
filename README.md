@@ -31,10 +31,12 @@
 6. Notion内で転送先のデータベースを作成（下記の必須プロパティを含む）
    - title (タイトル): タイトル型
    - url (URL): URL型
-   - author (著者): リッチテキスト型
+   - author (著者): テキスト型
    - likes (いいね数): 数値型
+   - stocks (ストック数): 数値型
    - tags (タグ): マルチセレクト型
-   - summary (概要): リッチテキスト型
+   - created_at (作成日): 日付型またはテキスト型
+   - summary (概要): テキスト型
 7. データベースページで「⋮」→「Add connections」からインテグレーションを連携
 8. データベースのURLから ID を取得:
    `https://www.notion.so/{workspace}/{database_id}?v=...`
