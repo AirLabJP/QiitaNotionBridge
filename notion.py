@@ -13,6 +13,7 @@ from dotenv import load_dotenv
 from notion_client import Client
 from notion_client.errors import APIResponseError
 
+
 # ロギング設定
 logger = logging.getLogger(__name__)
 

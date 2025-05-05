@@ -167,8 +167,8 @@ class QiitaClient:
             'url': article.get('url', ''),
             'author': article.get('user', {}).get('name', article.get('user', {}).get('id', '')),
             'likes': article.get('likes_count', 0),
-            'stocks': article.get('stocks_count', 0),
+          #  'stocks': article.get('stocks_count', 0),
             'tags': tags,
-            'created_at': article.get('created_at', ''),
+          #  'created_at': article.get('created_at', ''),
             'summary': summary
         }
