@@ -48,8 +48,10 @@ class NotionClient:
                 'url': 'url',
                 'author': 'rich_text',
                 'likes': 'number',
+                'stocks': 'number',
                 'tags': 'multi_select',
-                'summary': 'rich_text'
+                'summary': 'rich_text',
+                'created_at': 'date'
             }
             
             # プロパティチェック
@@ -125,43 +127,51 @@ class NotionClient:
         try:
             # Notionページ用プロパティを作成
             properties = {
-                "title": {
-                    "title": [
-                        {
-                            "text": {
-                                "content": article['title']
-                            }
-                        }
-                    ]
-                },
-                "url": {
-                    "url": article['url']
-                },
-                "author": {
-                    "rich_text": [
-                        {
-                            "text": {
-                                "content": article['author']
-                            }
-                        }
-                    ]
-                },
-                "likes": {
-                    "number": article['likes']
-                },
-                "tags": {
-                    "multi_select": [{"name": tag} for tag in article['tags'][:10]]  # 上限に注意
-                },
-                "summary": {
-                    "rich_text": [
-                        {
-                            "text": {
-                                "content": article['summary']
-                            }
-                        }
-                    ]
+    "title": {
+        "title": [
+            {
+                "text": {
+                    "content": article['title']
                 }
             }
+        ]
+    },
+    "url": {
+        "url": article['url']
+    },
+    "author": {
+        "rich_text": [
+            {
+                "text": {
+                    "content": article['author']
+                }
+            }
+        ]
+    },
+    "likes": {
+        "number": article['likes']
+    },
+    "stocks": {
+        "number": article.get('stocks', 0)  # 追加
+    },
+    "tags": {
+        "multi_select": [{"name": tag} for tag in article['tags'][:10]]
+    },
+    "summary": {
+        "rich_text": [
+            {
+                "text": {
+                    "content": article['summary']
+                }
+            }
+        ]
+    },
+    "created_at": {
+        "date": {
+            "start": article.get('created_at', None)  # 追加
+        }
+    }
+}
             
             # 既存ページの更新または新規作成
             if existing_page:
