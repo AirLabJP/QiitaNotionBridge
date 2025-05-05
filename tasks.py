@@ -51,7 +51,6 @@ def daily_job(backfill_days=1):
         # 6. 新規記事がある場合はコンソールに通知
         if new_articles:
             logger.info(f"{new_count} 件の新規記事を通知します")
-            notify_new_articles(new_articles)
         else:
             logger.info("新規記事がないため、通知は送信しません")
             
