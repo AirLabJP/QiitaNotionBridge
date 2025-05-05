@@ -10,7 +10,6 @@ from datetime import datetime
 
 from qiita import QiitaClient
 from notion import NotionClient
-from raycast import notify_new_articles
 from utils import get_jst_now
 
 # ロギング設定
