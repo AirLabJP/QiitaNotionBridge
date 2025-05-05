@@ -1,97 +1,42 @@
-# Python関連
+# Python
 __pycache__/
 *.py[cod]
-*$py.class
 *.so
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
 *.egg-info/
-.installed.cfg
 *.egg
-MANIFEST
+dist/
+build/
+.eggs/
 .pytest_cache/
 htmlcov/
-.coverage
-.coverage.*
-coverage.xml
-*.cover
+.coverage*
+MANIFEST
 
 # 仮想環境
 env/
 venv/
 ENV/
+.venv/
 .env
-.venv
-env.bak/
-venv.bak/
 
-# Flask関連
-instance/
-.webassets-cache
-flask_session/
-
-# データベース関連
-*.sqlite
-*.db
-*.sql
-*.dump
-postgres-data/
+# ログ・一時ファイル
+*.log
+logs/
+.cache/
+tmp/
+temp/
 
 # 機密情報
 .env
 .env.*
 credentials.json
 secret_key.txt
-config.local.py
 
-# ログファイル
-*.log
-logs/
-
-# MacOS関連
+# macOS
 .DS_Store
-.AppleDouble
-.LSOverride
-Icon
-._*
-.DocumentRevisions-V100
-.fseventsd
-.Spotlight-V100
-.TemporaryItems
-.Trashes
-.VolumeIcon.icns
-.com.apple.timemachine.donotpresent
 
-# エディタ・IDE関連
-# VSCode
+# エディタ
 .vscode/
-*.code-workspace
-# PyCharm
 .idea/
-*.iml
-*.iws
-*.ipr
-.idea_modules/
-# Jupyter Notebook
 .ipynb_checkpoints
-
-# その他
-.uv/
-node_modules/
-.cache/
-tmp/
-temp/
-credentials/
-.gitignore.swp
 
