@@ -9,6 +9,12 @@ import logging
 import os
 import time
 from datetime import datetime, timedelta
+from sumy.parsers.html import HtmlParser
+from sumy.parsers.plaintext import PlaintextParser
+from sumy.nlp.tokenizers import Tokenizer
+from sumy.summarizers.lsa import LsaSummarizer
+from sumy.nlp.stemmers import Stemmer
+from sumy.utils import get_stop_words
 
 import requests
 from dotenv import load_dotenv
@@ -65,6 +71,30 @@ class QiitaClient:
                 logger.warning(f"レート制限に達しました。{wait_time}秒待機します")
                 time.sleep(wait_time)
             raise
+    
+    @staticmethod
+    def get_summary(text, language="japanese", sentences_count=3):
+        """
+        テキストを要約する関数
+    
+        Args:
+            text (str): 要約するテキスト
+            language (str): 言語（日本語の場合は"japanese"）
+            sentences_count (int): 要約後の文の数
+        
+        Returns:
+            str: 要約されたテキスト
+        """
+        parser = PlaintextParser.from_string(text, Tokenizer(language))
+        stemmer = Stemmer(language)
+        summarizer = LsaSummarizer(stemmer)
+        summarizer.stop_words = get_stop_words(language)
+    
+        # 要約を生成
+        summary_sentences = summarizer(parser.document, sentences_count)
+        summary = " ".join([str(sentence) for sentence in summary_sentences])
+    
+        return summary
     
     def get_popular_articles(self, days=1, min_likes=500):
         """
@@ -158,9 +188,12 @@ class QiitaClient:
         # タグ情報を抽出
         tags = [tag['name'] for tag in article.get('tags', [])]
         
-        # 本文の最初の300文字を要約として使用
+        # 本文を要約
         body = article.get('body', '')
-        summary = body[:300] + ('...' if len(body) > 300 else '')
+        if len(body) > 300:
+            summary = self.get_summary(body)
+        else:
+            summary = body[:300]
         
         return {
             'title': article.get('title', ''),

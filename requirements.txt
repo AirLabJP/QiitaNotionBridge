@@ -1,0 +1,8 @@
+requests
+schedule
+notion-client
+python-dotenv
+sumy
+tinysegmenter
+lxml_html_clean
+setuptools
