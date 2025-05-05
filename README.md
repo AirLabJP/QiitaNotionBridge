@@ -20,8 +20,8 @@
 ### 1. リポジトリのクローン
 
 ```bash
-git clone https://github.com/yourname/qiita-notion-bridge.git
-cd qiita-notion-bridge
+git clone https://github.com/AirLabJP/QiitaNotionBridge.git
+cd QiitaNotionBridge
 ```
 
 ---
