@@ -15,12 +15,14 @@ from utils import get_jst_now
 # ロギング設定
 logger = logging.getLogger(__name__)
 
-def daily_job(backfill_days=1):
+def daily_job(backfill_days: int = 1, min_likes: int = 500, min_stocks: int = 500) -> None:
     """
     Qiitaから人気記事を取得してNotionに保存する日次ジョブ
     
     Args:
         backfill_days (int): バックフィル時の日数
+        min_likes (int): 最小いいね数
+        min_stocks (int): 最小ストック数
     """
     logger.info(f"日次ジョブ実行開始: {get_jst_now().strftime('%Y-%m-%d %H:%M:%S JST')}")
     
@@ -30,7 +32,7 @@ def daily_job(backfill_days=1):
         
         # 2. 指定日数分の人気記事を取得 (LGTM/Stock 500以上)
         logger.info(f"過去 {backfill_days} 日分の人気記事を取得中...")
-        articles = qiita_client.get_popular_articles(days=backfill_days, min_likes=500)
+        articles = qiita_client.get_popular_articles(days=backfill_days, min_likes=min_likes, min_stocks=min_stocks)
         
         if not articles:
             logger.info("条件に一致する記事が見つかりませんでした")

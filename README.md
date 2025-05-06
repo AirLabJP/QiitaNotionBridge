@@ -1,17 +1,21 @@
 # 📚 Qiita → Notion ハイライト・ブリッジ
 
-人気の Qiita 記事を自動で取得し、Notion データベースに転送するアプリケーションです。  
-いいね（LGTM）または Stock 数が **500以上** の記事のみを対象とします。
+人気の Qiita 記事を自動で取得し、Notion データベースに転送するアプリケーション。  
+いいね（LGTM）または Stock 数が**指定した閾値以上**の記事のみを対象とします。  
+**Notion DBのカラム（プロパティ）が足りなければ自動で追加**します。
 
 ---
 
-## 🚀 機能概要
+## 🚀 主な機能
 
-- Qiita API から過去24時間分の記事を取得
-- LGTM または Stock 数が 500 以上の人気記事を抽出
-- Notion データベースに upsert（更新 or 新規追加）
-- 新規追加記事があれば、コンソールに結果を出力
-- summary は `sumy` + `tinysegmenter` による日本語対応の自動要約
+- Qiita API から過去N日分の記事を取得
+- LGTM または Stock 数が指定値以上の人気記事を抽出
+- 本文を自動要約（sumy + tinysegmenter）
+- Notion データベースに upsert（新規追加 or 更新）
+- 新規追加記事があればコンソール＆app.logに出力
+- **Notion DBにカラムがなければ自動で追加**
+- CLI対話式・自動化（定時実行）どちらも対応
+- **全自動テスト（pytest）付き**
 
 ---
 
@@ -19,7 +23,7 @@
 
 ### 1. リポジトリのクローン
 
-```bash
+```sh
 git clone https://github.com/AirLabJP/QiitaNotionBridge.git
 cd QiitaNotionBridge
 ```
@@ -28,26 +32,18 @@ cd QiitaNotionBridge
 
 ### 2. 必要なトークンの取得
 
-#### ✅ Qiita アクセストークンの取得方法
+#### Qiita アクセストークン
+1. [Qiita](https://qiita.com/) で「個人用アクセストークン」を発行（`read_qiita`スコープ）
 
-1. [Qiita](https://qiita.com/) にログイン
-2. 右上のユーザーアイコン →「設定」→「アプリケーション」
-3. 「個人用アクセストークン」を新規発行（`read_qiita`スコープを選択）
-
-#### ✅ Notion Integration トークンと DB ID の取得方法
-
-1. [Notion](https://www.notion.so/) にログイン
-2. [My Integrations](https://www.notion.so/my-integrations) にアクセスし、「+ New integration」で作成
-3. 権限を設定し、`Internal Integration Token` を取得
-4. Notion データベースを作成（下記スキーマを参照）
-5. データベース右上「⋮」→「Add connections」で Integration を接続
-6. データベースURLから ID を取得（URL中の英数字）
+#### Notion Integration トークンと DB ID
+1. [Notion](https://www.notion.so/) でインテグレーションを作成し、Internal Integration Tokenを取得
+2. Notionでデータベースを作成（下記スキーマを参照）
+3. データベース右上「⋮」→「Add connections」で Integration を接続
+4. データベースURLからIDを取得（32桁のハイフン付きID）
 
 ---
 
 ### 3. Notion データベース スキーマ
-
-以下のプロパティを含むデータベースを作成してください：
 
 | プロパティ名   | 型               | 説明               |
 |----------------|------------------|--------------------|
@@ -57,123 +53,105 @@ cd QiitaNotionBridge
 | `likes`        | 数値型           | LGTM数             |
 | `stocks`       | 数値型           | ストック数         |
 | `tags`         | マルチセレクト型 | タグ一覧           |
-| `created_at`   | 日付型 or テキスト型 | 投稿日       |
+| `created_at`   | 日付型           | 投稿日             |
 | `summary`      | テキスト型       | 自動要約の内容     |
+
+> **カラムが足りない場合は自動で追加されます！**
 
 ---
 
 ### 4. 環境変数の設定
 
-`.env.example` を `.env` にコピーし、各トークンとDB IDを記入してください：
+`.env.example` を `.env` にコピーし、各トークンとDB IDを記入：
 
-```bash
+```sh
 cp .env.example .env
 ```
-
-#### `.env` の例：
-
-```env
-QIITA_TOKEN=your_qiita_token
-NOTION_TOKEN=your_notion_token
-NOTION_DB_ID=your_notion_database_id
-```
-
-※ `.env` は `.gitignore` により GitHub には含まれません。
 
 ---
 
 ### 5. 依存パッケージのインストール
 
-```bash
+```sh
 pip install -r requirements.txt
 ```
 
-#### requirements.txt の内容（参考）:
+---
 
-```
-requests
-schedule
-notion-client
-python-dotenv
-sumy
-tinysegmenter
-lxml_html_clean
-setuptools
+### 6. テストの実行
+
+```sh
+pytest
 ```
 
 ---
 
-### 6. 実行方法
+## 🖥️ 使い方
 
-#### 通常モード（毎日定期取得）
+### 対話式（手動実行）
 
-```bash
+```sh
 python main.py
 ```
+- CLIで「最低いいね数」「最低ストック数」「バックフィル日数」を日本語で入力
+- 1回だけ実行して終了
 
-#### バックフィルモード（過去データ取得）
+### 自動化（定時実行・サーバー運用）
 
-```bash
-python main.py --backfill days=3
+```sh
+python main.py --schedule --min-likes 500 --min-stocks 500 --backfill-days 1
 ```
+- 毎日07:00に自動実行
+- CLIプロンプトはスキップ
 
-> `--backfill days=3` で過去3日分の人気記事を一括取得してNotionに登録します。
+### バックフィル実行（過去データの一括取得）
 
----
-
-## 📦 出力例
-
-```bash
-✅ 新規追加: 「PythonでGPTを使ってみた」 by user123
-✅ 新規追加: 「FastAPI入門」 by dev567
-🔁 既存記事: 「Gitの使い方」はすでにDBに存在
-```
-
-#### summary出力イメージ（Notion上）:
-
-```text
-PythonとOpenAI APIを使って簡単なチャットボットを作成する手順を紹介。実行環境、APIキーの取得、エラーハンドリングの注意点などがわかりやすく解説されている。
+```sh
+python main.py --backfill days=3 --min-likes 300 --min-stocks 200
 ```
 
 ---
 
-## 🌐 Replitで利用する場合の補足
+## 📝 ログファイル出力
 
-- 「Secrets」タブで `.env` の各変数を追加してください
-- `main.py` を run コマンドに設定しておくとクリック実行可能です
-- スリープ防止には外部Pingサービスを使うと安定します
+- すべてのログは`app.log`にも出力されます（INFO以上）
 
 ---
 
-## ⚠️ 注意点
+## 🛡️ セキュリティ・注意事項
 
-- summary は `sumy` + `tinysegmenter` による日本語自動要約
-- Notion DBのプロパティは **上記スキーマに厳密に従う必要あり**
-- Slack通知・Webhookなどの連携は未実装
-- アプリはローカル or Replit 上で動作します（Webホスティング不要）
-
----
-
-## 💡 拡張アイデア（今後の開発候補）
-
-- ✅ Slack通知連携
-- ✅ Elasticsearchでの全文検索連携
-- ✅ LINE Notify 通知
-- ✅ タグフィルタリング機能（Notionタグを利用）
-- ✅ Notion内ダッシュボード自動生成
-- ✅ フロントエンドでのビジュアライズ表示（Streamlitなど）
+- `.env`は`.gitignore`済み。**絶対に公開しないこと**
+- Notion Integrationには必要最小限の権限のみ付与
+- summary（要約）は著作権・フェアユースに注意
+- トークンの形式・長さチェックあり
 
 ---
 
-## 🔒 セキュリティに関して
+## 🧪 テスト・保守
 
-- アクセストークンは環境変数 `.env` で管理してください
-- Notion Integration には **必要最小限のDBへのアクセスのみ** 付与してください
-- 公開リポジトリでは絶対に `.env` をコミットしないでください
+- pytestによる自動テスト付き
+- requirements.txtはバージョン固定
+- Notion DBのカラム自動追加
+- 型ヒント・docstring・ロギングも充実
 
 ---
 
-## 🙌 協力・問い合わせ
+## 💡 拡張アイデア
 
-ご意見・プルリク歓迎です！  
-ご連絡は [@AirLabJP](https://github.com/AirLabJP) まで。
+- Slack通知・Webhook連携
+- タグごとの閾値設定
+- Notion DBプロパティの自動検証・自動作成
+- Web UIやダッシュボード
+
+---
+
+## 📝 ライセンス
+
+MIT License
+
+---
+
+## 🙌 コントリビューション
+
+PR・Issue歓迎！  
+テストが通ることを確認してから送ってください。

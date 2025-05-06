@@ -7,11 +7,12 @@
 
 import logging
 from datetime import datetime, timedelta, timezone
+from typing import Optional, Tuple
 
 # ロギング設定
 logger = logging.getLogger(__name__)
 
-def format_datetime(dt, format_str="%Y-%m-%d"):
+def format_datetime(dt: datetime, format_str: str = "%Y-%m-%d") -> str:
     """
     datetime オブジェクトを文字列にフォーマット
     
@@ -24,7 +25,7 @@ def format_datetime(dt, format_str="%Y-%m-%d"):
     """
     return dt.strftime(format_str)
 
-def parse_iso_datetime(iso_string):
+def parse_iso_datetime(iso_string: str) -> datetime:
     """
     ISO 8601形式の日時文字列をdatetimeオブジェクトに変換
     
@@ -41,7 +42,7 @@ def parse_iso_datetime(iso_string):
         # エラー時は現在時刻を返す
         return datetime.now(timezone.utc)
 
-def get_jst_now():
+def get_jst_now() -> datetime:
     """
     現在の日本時間を取得
     
@@ -52,7 +53,7 @@ def get_jst_now():
     jst = timezone(timedelta(hours=9))
     return datetime.now(jst)
 
-def get_date_range(days):
+def get_date_range(days: int) -> Tuple[datetime, datetime]:
     """
     指定日数前から現在までの日付範囲を取得
     
@@ -66,7 +67,7 @@ def get_date_range(days):
     start_date = end_date - timedelta(days=days)
     return start_date, end_date
 
-def truncate_text(text, max_length=100):
+def truncate_text(text: Optional[str], max_length: int = 100) -> str:
     """
     テキストを指定の長さに切り詰める
     

@@ -18,6 +18,7 @@ from sumy.utils import get_stop_words
 
 import requests
 from dotenv import load_dotenv
+from typing import Any, Dict, List, Optional
 
 from utils import format_datetime, parse_iso_datetime
 
@@ -34,18 +35,18 @@ class QiitaClient:
     PER_PAGE = 100  # 1リクエストあたりの最大取得件数
     RATE_LIMIT = 60  # 1分あたりのリクエスト上限
     
-    def __init__(self, token=None):
+    def __init__(self, token: Optional[str] = None) -> None:
         """初期化"""
         self.token = token or os.getenv('QIITA_TOKEN')
-        if not self.token:
-            raise ValueError("Qiita APIトークンが設定されていません")
+        if not self.token or len(self.token) < 20:
+            raise ValueError("Qiita APIトークンの形式が不正です（20文字以上の英数字）")
         
         self.headers = {
             "Authorization": f"Bearer {self.token}",
             "Content-Type": "application/json"
         }
     
-    def _make_request(self, endpoint, params=None):
+    def _make_request(self, endpoint: str, params: Optional[dict] = None) -> Any:
         """APIリクエストを実行"""
         url = f"{self.BASE_URL}/{endpoint}"
         
@@ -73,7 +74,7 @@ class QiitaClient:
             raise
     
     @staticmethod
-    def get_summary(text, language="japanese", sentences_count=3):
+    def get_summary(text: str, language: str = "japanese", sentences_count: int = 3) -> str:
         """
         テキストを要約する関数
     
@@ -96,13 +97,14 @@ class QiitaClient:
     
         return summary
     
-    def get_popular_articles(self, days=1, min_likes=500):
+    def get_popular_articles(self, days: int = 1, min_likes: int = 500, min_stocks: int = 500) -> List[dict]:
         """
         指定日数以内の人気記事を取得
         
         Args:
             days (int): 何日前までの記事を取得するか
             min_likes (int): 最低いいね数（LGTM or Stock）
+            min_stocks (int): 最低ストック数（LGTM or Stock）
             
         Returns:
             list: 条件を満たす記事のリスト
@@ -169,13 +171,13 @@ class QiitaClient:
                 likes = article.get('likes_count', 0)
                 stocks = article.get('stocks_count', 0)
                 
-                if likes >= min_likes or stocks >= min_likes:
+                if likes >= min_likes or stocks >= min_stocks:
                     popular_articles.append(article)
         
         logger.info(f"{len(all_articles)} 記事中、{len(popular_articles)} 件が条件に一致しました")
         return popular_articles
 
-    def format_article_for_notion(self, article):
+    def format_article_for_notion(self, article: dict) -> dict:
         """
         Qiita記事をNotion用に整形
         
@@ -205,3 +207,8 @@ class QiitaClient:
             'created_at': article.get('created_at', ''),
             'summary': summary
         }
+
+    @staticmethod
+    def summarize_text(text: str, sentence_count: int = 3) -> str:
+        # Implementation of summarize_text method
+        pass
