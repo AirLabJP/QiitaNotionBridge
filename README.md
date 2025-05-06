@@ -33,9 +33,11 @@ cd QiitaNotionBridge
 ### 2. 必要なトークンの取得
 
 #### Qiita アクセストークン
+
 1. [Qiita](https://qiita.com/) で「個人用アクセストークン」を発行（`read_qiita`スコープ）
 
 #### Notion Integration トークンと DB ID
+
 1. [Notion](https://www.notion.so/) でインテグレーションを作成し、Internal Integration Tokenを取得
 2. Notionでデータベースを作成（下記スキーマを参照）
 3. データベース右上「⋮」→「Add connections」で Integration を接続
@@ -45,16 +47,16 @@ cd QiitaNotionBridge
 
 ### 3. Notion データベース スキーマ
 
-| プロパティ名   | 型               | 説明               |
-|----------------|------------------|--------------------|
-| `title`        | タイトル型       | 記事タイトル       |
-| `url`          | URL型            | 記事のURL          |
-| `author`       | テキスト型       | 投稿者のユーザー名 |
-| `likes`        | 数値型           | LGTM数             |
-| `stocks`       | 数値型           | ストック数         |
-| `tags`         | マルチセレクト型 | タグ一覧           |
-| `created_at`   | 日付型           | 投稿日             |
-| `summary`      | テキスト型       | 自動要約の内容     |
+| プロパティ名 | 型               | 説明               |
+| ------------ | ---------------- | ------------------ |
+| `title`      | タイトル型       | 記事タイトル       |
+| `url`        | URL型            | 記事のURL          |
+| `author`     | テキスト型       | 投稿者のユーザー名 |
+| `likes`      | 数値型           | LGTM数             |
+| `stocks`     | 数値型           | ストック数         |
+| `tags`       | マルチセレクト型 | タグ一覧           |
+| `created_at` | 日付型           | 投稿日             |
+| `summary`    | テキスト型       | 自動要約の内容     |
 
 > **カラムが足りない場合は自動で追加されます！**
 
@@ -93,6 +95,7 @@ pytest
 ```sh
 python main.py
 ```
+
 - CLIで「最低いいね数」「最低ストック数」「バックフィル日数」を日本語で入力
 - 1回だけ実行して終了
 
@@ -101,6 +104,7 @@ python main.py
 ```sh
 python main.py --schedule --min-likes 500 --min-stocks 500 --backfill-days 1
 ```
+
 - 毎日07:00に自動実行
 - CLIプロンプトはスキップ
 
