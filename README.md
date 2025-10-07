@@ -1,6 +1,6 @@
 # 📚 Qiita → Notion ハイライト・ブリッジ
 
-人気の Qiita 記事を自動で取得し、Notion データベースに転送するアプリケーション。  
+人気の Qiita 記事を自動で取得し、Notion データベースに転送するアプリケーション。                                                                                
 いいね（LGTM）または Stock 数が**指定した閾値以上**の記事のみを対象とします。  
 **Notion DBのカラム（プロパティ）が足りなければ自動で追加**します。
 
@@ -34,11 +34,11 @@ cd QiitaNotionBridge
 
 #### Qiita アクセストークン
 
-1. [Qiita](https://qiita.com/) で「個人用アクセストークン」を発行（`read_qiita`スコープ）
+1. [Qiita](https://qiita.com/) で「個人用アクセストークン」を発行（`read_qiita`スコープ）                                                                      
 
 #### Notion Integration トークンと DB ID
 
-1. [Notion](https://www.notion.so/) でインテグレーションを作成し、Internal Integration Tokenを取得
+1. [Notion](https://www.notion.so/) でインテグレーションを作成し、Internal Integration Tokenを取得                                                              
 2. Notionでデータベースを作成（下記スキーマを参照）
 3. データベース右上「⋮」→「Add connections」で Integration を接続
 4. データベースURLからIDを取得（32桁のハイフン付きID）
@@ -151,7 +151,7 @@ python main.py --backfill days=3 --min-likes 300 --min-stocks 200
 
 ## 📝 ライセンス
 
-MIT License
+なし
 
 ---
 
